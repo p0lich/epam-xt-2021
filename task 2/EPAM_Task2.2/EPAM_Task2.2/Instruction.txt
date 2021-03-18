@@ -1,0 +1,12 @@
+﻿To move use arrow keys
+
+There are some objects in game:
+
+H - playable character. Has 3 hp
+< - enemy (move only left, 5 in total)
+O - collectable bonus (5 in total)
+¤ - obstacle (10 in total). Player cant move over obstacle. Enemies can jamp over it
+* - game bound. Player cant move over bound. Enemy start from other side of map when reach the bound
+
+Rules:
+Collect all bonuses to win. Each bonus give you 100 points. When you hit the enemy you lose 1 hp. When you hp drop to 0 you lose.
