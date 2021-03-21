@@ -336,7 +336,7 @@ namespace EPAM_Task2._1._2
 
             switch (figure.Type)
             {
-                case FigureType.Circle:
+                case FigureType.Ring:
                     Console.WriteLine("Radius1: " + side1);
                     Console.WriteLine("Radius2: " + side2);
                     break;
