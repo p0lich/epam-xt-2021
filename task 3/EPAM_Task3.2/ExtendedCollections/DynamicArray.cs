@@ -38,15 +38,28 @@ namespace ExtendedCollections
 
         public T this[int index]
         {
-            // TODO: ArgumentOutOfRangeException
             get
             {
-                if (index >= 0)
+                try
                 {
-                    return _data[index];
+                    if (index > Length)
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+
+                    if (index >= 0)
+                    {
+                        return _data[index];
+                    }
+
+                    return _data[Length + index];
                 }
 
-                return _data[Length + index];
+                catch (ArgumentOutOfRangeException e)
+                {
+                    Console.WriteLine(e.Message);
+                    return default;
+                }
             }
         }
 
@@ -79,8 +92,13 @@ namespace ExtendedCollections
 
         public bool Remove(int index)
         {
-            if (index < Length)
+            try
             {
+                if (index >= Length)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+
                 ArrayOffset(index, false);
 
                 _data[Length - 1] = default;
@@ -89,15 +107,23 @@ namespace ExtendedCollections
                 return true;
             }
 
-            return false;
+
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
         }
 
         public bool Insert(int index, T value)
         {
-            // TODO: ArgumentOutOfRangeException
-
-            if (index <= Length)
+            try
             {
+                if (index > Length)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+
                 if (Length == Capacity)
                 {
                     IncreaseCapacity();
@@ -106,12 +132,15 @@ namespace ExtendedCollections
                 Length++;
                 ArrayOffset(index, true);
                 _data[index] = value;
-                
 
                 return true;
             }
 
-            return false;
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
         }
 
         private static int GetCollectionLength(IEnumerable<T> collection)
@@ -176,7 +205,7 @@ namespace ExtendedCollections
                     _data[i + 1] = _data[i];
                 }
             }
-            
+
             else
             {
                 for (int i = referenceIndex; i < Length - 1; i++)
@@ -186,17 +215,19 @@ namespace ExtendedCollections
             }
         }
 
-        // TODO
         #region INTERFACE_IMPLEMENTATION
 
         public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < Length; i++)
+            {
+                yield return _data[i];
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return _data.GetEnumerator();
         }
 
         #endregion

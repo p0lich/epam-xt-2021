@@ -9,6 +9,12 @@ namespace EPAM_Task3._2
     {
         static void Main(string[] args)
         {
+            DynamicArray<string> emptyMass = new DynamicArray<string>();
+            ShowInfo(emptyMass);
+
+            DynamicArray<float> emptyWithLengthMass = new DynamicArray<float>(10);
+            ShowInfo(emptyWithLengthMass);
+
             DynamicArray<int> mass = new DynamicArray<int>(new int[] { 1, 2, 3, 4 });
             ShowInfo(mass);
 
@@ -27,28 +33,23 @@ namespace EPAM_Task3._2
             mass.Insert(0, -2);
             ShowInfo(mass);
 
-            //List<int> lst = new List<int>();
+            mass.Remove(100);
 
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    lst.Add(i);
-            //}
-
-            //lst.Insert(4, 9);
-
-            //for (int i = 0; i < lst.Count; i++)
-            //{
-            //    Console.WriteLine(lst[i]);
-            //}
+            Console.WriteLine(mass[100]);
         }
 
         public static void ShowInfo<T>(DynamicArray<T> mass)
         {
             StringBuilder str = new StringBuilder();
 
-            for (int i = 0; i < mass.Length; i++)
+            //for (int i = 0; i < mass.Length; i++)
+            //{
+            //    str.Append(mass[i] + " ");
+            //}
+
+            foreach (var item in mass)
             {
-                str.Append(mass[i] + " ");
+                str.Append(item + " ");
             }
 
             Console.WriteLine("Data: {0}\nLength: {1}\nCapacity: {2}\n",
