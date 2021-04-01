@@ -8,7 +8,7 @@ namespace EPAM_Task3._3._3
 {
     public class Pizzeria
     {
-        public string Name { get; init; }
+        public string Name { get; }
         public List<Pizza> Menu { get; private set; }
         public int CurrentOrder { get; private set; }
         public List<Order> ProcessingOrders { get; private set; }
@@ -43,12 +43,13 @@ namespace EPAM_Task3._3._3
             }
 
             CurrentOrder++;
-            Order order = new Order(CurrentOrder, pizzasForOrder, totalPrice);
+            Order orderForPizzeria = new Order(CurrentOrder, pizzasForOrder, totalPrice);
+            Order orderForClient = new Order(CurrentOrder, pizzasForOrder, totalPrice);
 
             client.Balance -= totalPrice;
-            client.Orders.Add(order);
+            client.Orders.Add(orderForClient);
 
-            ProcessingOrders.Add(order);
+            ProcessingOrders.Add(orderForPizzeria);
 
             return 0;
         }
@@ -71,6 +72,32 @@ namespace EPAM_Task3._3._3
                     i--;
                 }
             }
+        }
+
+        public bool GiveAway(Client client)
+        {
+            var clientReadyOrders = from readyOrder in ReadyToTakeOrders
+                                    from clientOrder in client.Orders
+                                    where readyOrder.OrderNumber == clientOrder.OrderNumber
+                                    select clientOrder;
+
+            if (!clientReadyOrders.Any())
+            {
+                return false;
+            }
+
+            foreach (var item in clientReadyOrders.ToList())
+            {
+                client.OrdersHistory.Add(item);
+
+                int orderInd = ReadyToTakeOrders.FindIndex(o => o.OrderNumber == item.OrderNumber);
+                int clientOrderInd = client.Orders.FindIndex(o => o.OrderNumber == item.OrderNumber);
+
+                ReadyToTakeOrders.RemoveAt(orderInd);
+                client.Orders.RemoveAt(clientOrderInd);
+            }
+
+            return true;
         }
 
         private int GetPrice(List<Pizza> pizzas)
@@ -113,7 +140,7 @@ namespace EPAM_Task3._3._3
             {
                 if (Int32.TryParse(Console.ReadLine(), out int num))
                 {
-                    if (num > 0 && num <= Menu.Count)
+                    if (num > 0 && num <= Menu.Count + 1)
                     {
                         return num;
                     }                    
@@ -127,38 +154,14 @@ namespace EPAM_Task3._3._3
         {
             for (int i = 0; i < Menu.Count; i++)
             {
-                Console.WriteLine("{0} - {1}(Cooking time: {2})",
+                Console.WriteLine("{0} - {1}(Price: {2}; Cooking time: {3})",
                     i + 1,
                     Menu[i].Name,
+                    Menu[i].Price,
                     Menu[i].CookingTime);
             }
 
             Console.WriteLine((Menu.Count + 1).ToString() + " - Exit");
-        }
-
-        // TODO: Give away multiple orders for one client
-        private bool GiveAway(Client client)
-        {
-            if (ReadyToTakeOrders.Count > 0)
-            {
-                for (int i = 0; i < ReadyToTakeOrders.Count; i++)
-                {
-                    for (int clientInd = 0; clientInd < client.Orders.Count; clientInd++)
-                    {
-                        if (ReadyToTakeOrders[i].OrderNumber == client.Orders[clientInd].OrderNumber)
-                        {
-                            client.OrdersHistory.Add(ReadyToTakeOrders[i]);
-
-                            ReadyToTakeOrders.RemoveAt(i);
-                            client.Orders.RemoveAt(clientInd);
-
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }

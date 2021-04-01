@@ -8,10 +8,10 @@ namespace EPAM_Task3._3._3
 {
     public class Order
     {
-        public int OrderNumber { get; init; }
-        public List<Pizza> Pizzas { get; init; }
+        public int OrderNumber { get; }
+        public List<Pizza> Pizzas { get; }
         public int PreparingTime { get; set; }
-        public int TotalPrice { get; init; }
+        public int TotalPrice { get; }
 
         public Order(int orderNumber, List<Pizza> pizzas, int totalPrice)
         {

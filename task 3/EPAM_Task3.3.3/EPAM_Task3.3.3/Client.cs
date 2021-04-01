@@ -6,7 +6,7 @@ namespace EPAM_Task3._3._3
 {
     public class Client
     {
-        public string Name { get; private init; }
+        public string Name { get; }
         public int Balance { get; set; }
         public List<Order> Orders { get; set; }
         public List<Order> OrdersHistory { get; set; }
@@ -19,7 +19,7 @@ namespace EPAM_Task3._3._3
             OrdersHistory = new List<Order>();
         }
 
-        public void ShowOrderHistory()
+        public void ShowOrdersHistory()
         {
             foreach (var order in OrdersHistory)
             {
