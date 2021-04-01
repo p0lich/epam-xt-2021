@@ -9,7 +9,16 @@ namespace EPAM_Task3._3
 
     public static class ArrayExtension
     {
-        // TODO: handler of delegate
+        public static void UpdateData(this int[] array, Func<int, int> func)
+        {
+            if (func != null)
+            {
+                for (int i = 0; i < array.Length; i++)
+                {
+                    array[i] = func.Invoke(array[i]);
+                }
+            }
+        }
 
         public static int GetSum(this int[] array)
         {
