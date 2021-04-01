@@ -4,17 +4,32 @@ using System.Collections.Generic;
 
 namespace ExtendedCollections
 {
-    public class DynamicArray<T> : IEnumerable<T>, IEnumerable
+    public class DynamicArray<T> : IEnumerable<T>, IEnumerable, ICloneable
     {
-        private T[] _data;
-
+        protected T[] _data;
         public int Length { get; private set; }
-
         public int Capacity
         {
             get
             {
                 return _data.Length;
+            }
+
+            set
+            {
+                T[] tempData = new T[value];
+
+                for (int i = 0; i < value; i++)
+                {
+                    tempData[i] = _data[i];
+                }
+
+                if (value < Length)
+                {
+                    Length = value;
+                }
+
+                _data = tempData;
             }
         }
 
@@ -42,7 +57,7 @@ namespace ExtendedCollections
             {
                 try
                 {
-                    if (index > Length)
+                    if (Math.Abs(index) > Length)
                     {
                         throw new ArgumentOutOfRangeException();
                     }
@@ -107,7 +122,6 @@ namespace ExtendedCollections
                 return true;
             }
 
-
             catch (ArgumentOutOfRangeException e)
             {
                 Console.WriteLine(e.Message);
@@ -141,6 +155,32 @@ namespace ExtendedCollections
                 Console.WriteLine(e.Message);
                 return false;
             }
+        }
+
+        public T[] ToArray()
+        {
+            T[] mass = new T[Length];
+
+            for (int i = 0; i < Length; i++)
+            {
+                mass[i] = _data[i];
+            }
+
+            return mass;
+        }
+
+        private static void RewriteData(ref T[] data, out int length, IEnumerable<T> collection)
+        {
+            length = 0;
+            List<T> tempData = new List<T>();
+
+            foreach (var item in collection)
+            {
+                length++;
+                tempData.Add(item);
+            }
+
+            data = tempData.ToArray();
         }
 
         private static int GetCollectionLength(IEnumerable<T> collection)
@@ -182,20 +222,6 @@ namespace ExtendedCollections
             }
         }
 
-        private static void RewriteData(ref T[] data, out int length, IEnumerable<T> collection)
-        {
-            length = 0;
-            List<T> tempData = new List<T>();
-
-            foreach (var item in collection)
-            {
-                length++;
-                tempData.Add(item);
-            }
-
-            data = tempData.ToArray();
-        }
-
         private void ArrayOffset(int referenceIndex, bool isAdd)
         {
             if (isAdd)
@@ -217,7 +243,7 @@ namespace ExtendedCollections
 
         #region INTERFACE_IMPLEMENTATION
 
-        public IEnumerator<T> GetEnumerator()
+        public virtual IEnumerator<T> GetEnumerator()
         {
             for (int i = 0; i < Length; i++)
             {
@@ -228,6 +254,11 @@ namespace ExtendedCollections
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _data.GetEnumerator();
+        }
+
+        public object Clone()
+        {
+            return new DynamicArray<T>(_data);
         }
 
         #endregion
