@@ -10,7 +10,7 @@ namespace EPAM_Task3._3._3
     {
         public string Name { get; }
         public List<Pizza> Menu { get; private set; }
-        public int CurrentOrder { get; private set; }
+        public int LastOrder { get; private set; }
         public List<Order> ProcessingOrders { get; private set; }
         public List<Order> ReadyToTakeOrders { get; private set; }
 
@@ -18,7 +18,7 @@ namespace EPAM_Task3._3._3
         {
             Name = name;
             Menu = menu;
-            CurrentOrder = 0;
+            LastOrder = 0;
             ProcessingOrders = new List<Order>();
             ReadyToTakeOrders = new List<Order>();
         }
@@ -26,7 +26,7 @@ namespace EPAM_Task3._3._3
         // 0 - all ok
         // -1 - order is empty
         // -2 - not enough funds
-        public int MakeOrder(Client client)
+        public int MakeOrder(Client client, ref int clientBalance)
         {
             List<Pizza> pizzasForOrder = ChoosePizzas();
 
@@ -37,16 +37,16 @@ namespace EPAM_Task3._3._3
 
             int totalPrice = GetPrice(pizzasForOrder);
 
-            if (totalPrice > client.Balance)
+            if (totalPrice >= clientBalance)
             {
                 return -2;
             }
 
-            CurrentOrder++;
-            Order orderForPizzeria = new Order(CurrentOrder, pizzasForOrder, totalPrice);
-            Order orderForClient = new Order(CurrentOrder, pizzasForOrder, totalPrice);
+            LastOrder++;
+            Order orderForPizzeria = new Order(LastOrder, pizzasForOrder, totalPrice);
+            Order orderForClient = new Order(LastOrder, pizzasForOrder, totalPrice);
 
-            client.Balance -= totalPrice;
+            clientBalance -= totalPrice;
             client.Orders.Add(orderForClient);
 
             ProcessingOrders.Add(orderForPizzeria);
@@ -56,20 +56,22 @@ namespace EPAM_Task3._3._3
 
         public void WorkingProcess(int timeSpend)
         {
-            for (int i = 0; i < ProcessingOrders.Count; i++)
+            if (ProcessingOrders[0].PreparingTime > timeSpend)
             {
-                if (ProcessingOrders[i].PreparingTime > timeSpend)
-                {
-                    ProcessingOrders[i].PreparingTime -= timeSpend;
-                }
+                ProcessingOrders[0].PreparingTime -= timeSpend;
+            }
 
-                else
-                {
-                    ProcessingOrders[i].PreparingTime = 0;
-                    ReadyToTakeOrders.Add(ProcessingOrders[i]);
-                    ProcessingOrders.RemoveAt(i);
+            else
+            {
+                int leftTime = timeSpend - ProcessingOrders[0].PreparingTime;
 
-                    i--;
+                ProcessingOrders[0].PreparingTime = 0;
+                ReadyToTakeOrders.Add(ProcessingOrders[0]);
+                ProcessingOrders.RemoveAt(0);
+
+                if (ProcessingOrders.Count > 0)
+                {
+                    WorkingProcess(leftTime);
                 }
             }
         }

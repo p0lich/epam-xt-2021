@@ -18,8 +18,8 @@ namespace EPAM_Task3._3._3
             Pizzeria pizzeria = new Pizzeria("Pipirouni", menu);
             Client client = new Client("Bob", 2000);
 
-            pizzeria.MakeOrder(client);
-            pizzeria.MakeOrder(client);
+            client.SendOrder(pizzeria);
+            client.SendOrder(pizzeria);
 
             pizzeria.WorkingProcess(100);
 

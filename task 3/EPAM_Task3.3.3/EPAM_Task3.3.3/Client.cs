@@ -6,8 +6,24 @@ namespace EPAM_Task3._3._3
 {
     public class Client
     {
+        private int _balance;
+
         public string Name { get; }
-        public int Balance { get; set; }
+        public int Balance
+        {
+            get
+            {
+                return _balance;
+            }
+
+            private set
+            {
+                if (value >= 0)
+                {
+                    _balance = value;
+                }
+            }
+        }
         public List<Order> Orders { get; set; }
         public List<Order> OrdersHistory { get; set; }
 
@@ -35,6 +51,11 @@ namespace EPAM_Task3._3._3
                     pizzas.ToString(),
                     order.TotalPrice);
             }
+        }
+
+        public void SendOrder(Pizzeria pizzeria)
+        {
+            pizzeria.MakeOrder(this, ref _balance);
         }
     }
 }
