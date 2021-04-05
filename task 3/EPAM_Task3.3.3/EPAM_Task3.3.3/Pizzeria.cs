@@ -56,21 +56,21 @@ namespace EPAM_Task3._3._3
 
         public void WorkingProcess(int timeSpend)
         {
-            if (ProcessingOrders[0].PreparingTime > timeSpend)
+            if (ProcessingOrders.Count > 0)
             {
-                ProcessingOrders[0].PreparingTime -= timeSpend;
-            }
-
-            else
-            {
-                int leftTime = timeSpend - ProcessingOrders[0].PreparingTime;
-
-                ProcessingOrders[0].PreparingTime = 0;
-                ReadyToTakeOrders.Add(ProcessingOrders[0]);
-                ProcessingOrders.RemoveAt(0);
-
-                if (ProcessingOrders.Count > 0)
+                if (ProcessingOrders[0].PreparingTime > timeSpend)
                 {
+                    ProcessingOrders[0].PreparingTime -= timeSpend;
+                }
+
+                else
+                {
+                    int leftTime = timeSpend - ProcessingOrders[0].PreparingTime;
+
+                    ProcessingOrders[0].PreparingTime = 0;
+                    ReadyToTakeOrders.Add(ProcessingOrders[0]);
+                    ProcessingOrders.RemoveAt(0);
+
                     WorkingProcess(leftTime);
                 }
             }
