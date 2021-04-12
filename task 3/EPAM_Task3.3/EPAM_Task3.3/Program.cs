@@ -18,9 +18,16 @@ namespace EPAM_Task3._3
 
             Console.WriteLine("------");
 
-            Console.WriteLine("GetSum: {0}", mass.GetSum());
-            Console.WriteLine("GetAverage: {0}", mass.GetAverage());
-            Console.WriteLine("GetMostCommon: {0}", mass.GetMostCommon());
+            //Console.WriteLine(ArrayExtension.IsNumeric(2));
+            //Console.WriteLine(ArrayExtension.IsNumeric('v'));
+            //Console.WriteLine(ArrayExtension.IsNumeric(false));
+            //Console.WriteLine(ArrayExtension.IsNumeric(12.22));
+            //Console.WriteLine(ArrayExtension.IsNumeric("hello"));
+            //Console.WriteLine(ArrayExtension.IsNumeric(4));
+
+            //Console.WriteLine("GetSum: {0}", mass.GetSum());
+            //Console.WriteLine("GetAverage: {0}", mass.GetAverage());
+            //Console.WriteLine("GetMostCommon: {0}", mass.GetMostCommon());
 
             Console.WriteLine("------");
 
