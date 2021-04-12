@@ -17,6 +17,11 @@ namespace ExtendedCollections
 
             set
             {
+                if (value < 0)
+                {
+                    throw new OverflowException();
+                }
+
                 T[] tempData = new T[value];
 
                 for (int i = 0; i < value; i++)
@@ -55,26 +60,17 @@ namespace ExtendedCollections
         {
             get
             {
-                try
+                if (Math.Abs(index) > Length)
                 {
-                    if (Math.Abs(index) > Length)
-                    {
-                        throw new ArgumentOutOfRangeException();
-                    }
-
-                    if (index >= 0)
-                    {
-                        return _data[index];
-                    }
-
-                    return _data[Length + index];
+                    throw new ArgumentOutOfRangeException();
                 }
 
-                catch (ArgumentOutOfRangeException e)
+                if (index >= 0)
                 {
-                    Console.WriteLine(e.Message);
-                    return default;
+                    return _data[index];
                 }
+
+                return _data[Length + index];
             }
         }
 
@@ -107,54 +103,55 @@ namespace ExtendedCollections
 
         public bool Remove(int index)
         {
-            try
+            if (index >= Length)
             {
-                if (index >= Length)
+                throw new ArgumentOutOfRangeException();
+            }
+
+            ArrayOffset(index, false);
+
+            _data[Length - 1] = default;
+            Length--;
+
+            return true;
+        }
+
+        // Remove first entry of value
+        public bool Remove(T value)
+        {
+            for (int i = 0; i < Length; i++)
+            {
+                if (_data[i].Equals(value))
                 {
-                    throw new ArgumentOutOfRangeException();
+                    ArrayOffset(i, false);
+
+                    _data[Length - 1] = default;
+                    Length--;
+
+                    return true;
                 }
-
-                ArrayOffset(index, false);
-
-                _data[Length - 1] = default;
-                Length--;
-
-                return true;
             }
 
-            catch (ArgumentOutOfRangeException e)
-            {
-                Console.WriteLine(e.Message);
-                return false;
-            }
+            return false;
         }
 
         public bool Insert(int index, T value)
         {
-            try
+            if (index > Length)
             {
-                if (index > Length)
-                {
-                    throw new ArgumentOutOfRangeException();
-                }
-
-                if (Length == Capacity)
-                {
-                    IncreaseCapacity();
-                }
-
-                Length++;
-                ArrayOffset(index, true);
-                _data[index] = value;
-
-                return true;
+                throw new ArgumentOutOfRangeException();
             }
 
-            catch (ArgumentOutOfRangeException e)
+            if (Length == Capacity)
             {
-                Console.WriteLine(e.Message);
-                return false;
+                IncreaseCapacity();
             }
+
+            Length++;
+            ArrayOffset(index, true);
+            _data[index] = value;
+
+            return true;
         }
 
         public T[] ToArray()
@@ -197,11 +194,6 @@ namespace ExtendedCollections
 
         private void IncreaseCapacity(int collectionSize)
         {
-            //while (Capacity < collectionSize)
-            //{
-            //    IncreaseCapacity();
-            //}
-
             T[] tempData = _data;
             _data = new T[collectionSize];
 
