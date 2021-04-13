@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EPAM_Task3._3._3
 {
@@ -9,29 +11,38 @@ namespace EPAM_Task3._3._3
         {
             List<Pizza> menu = new List<Pizza>
             {
-                new Pizza("Pepperoni", 30, 300),
-                new Pizza("Carbonara", 45, 400),
-                new Pizza("Margarita", 60, 450),
-                new Pizza("Ham and mushroms", 40, 400)
+                new Pizza("Pepperoni", 10, 300),
+                new Pizza("Carbonara", 15, 400),
+                new Pizza("Margarita", 20, 450),
+                new Pizza("Ham and mushroms", 12, 400),
+                //Test parameters
+                new Pizza("Ultrafast pizza", 1, 0),
+                new Pizza("Ultraslow pizza", 60, 0),
             };
 
-            Pizzeria pizzeria = new Pizzeria("Pipirouni", menu);
-            Client client = new Client("Bob", 2000);
+            Pizzeria pizzeria = new Pizzeria(menu);
 
-            pizzeria.MakeOrder(client);
-            pizzeria.MakeOrder(client);
+            Client client1 = new Client("Bob", 2000);
 
-            pizzeria.WorkingProcess(100);
+            client1.SendOrder(pizzeria);
 
-            pizzeria.GiveAway(client);
-            client.ShowOrdersHistory();
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+            client1.SendOrder(pizzeria);
 
-            Console.WriteLine("------");
+            Client client2 = new Client("Tom", 3000);
+            client2.SendOrder(pizzeria);
+            client2.SendOrder(pizzeria);
 
-            pizzeria.WorkingProcess(100);
+            Thread.Sleep(TimeSpan.FromSeconds(60));
+            Console.WriteLine("-------------");
 
-            pizzeria.GiveAway(client);
-            client.ShowOrdersHistory();
+            pizzeria.GiveAway(client1);
+            //client1.ShowOrdersHistory();
+
+            pizzeria.GiveAway(client1);
+            //client.ShowOrdersHistory();
+
+            Console.ReadLine();
         }
     }
 }
