@@ -20,19 +20,13 @@ namespace EPAM_Task3._3._3
                 new Pizza("Ultraslow pizza", 60, 0),
             };
 
-            Pizzeria pizzeria = new Pizzeria("Pipirouni", menu, 120);
-
-            // Отдельный поток под работу пиццерии.
-            // Заказы будут выполнятся до тех пор, пока не закончится время
-            //Task.Factory.StartNew(() => pizzeria.WorkingProcess(ReadyOrderNotify));
-            pizzeria.StartWorking();
-            Thread.Sleep(1000);
+            Pizzeria pizzeria = new Pizzeria(menu);
 
             Client client1 = new Client("Bob", 2000);
 
             client1.SendOrder(pizzeria);
 
-            Thread.Sleep(TimeSpan.FromSeconds(3));
+            Thread.Sleep(TimeSpan.FromSeconds(2));
             client1.SendOrder(pizzeria);
 
             Client client2 = new Client("Tom", 3000);
@@ -40,6 +34,7 @@ namespace EPAM_Task3._3._3
             client2.SendOrder(pizzeria);
 
             Thread.Sleep(TimeSpan.FromSeconds(60));
+            Console.WriteLine("-------------");
 
             pizzeria.GiveAway(client1);
             //client1.ShowOrdersHistory();
