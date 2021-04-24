@@ -13,6 +13,8 @@ namespace EPAM_Task4._1
         private FileSystemWatcher Watcher { get; set; }
         private DirectoryInfo LogFolder { get; set; }
         private DirectoryInfo LogText { get; set; }
+        private DirectoryInfo TempFolder { get; }
+        private DirectoryInfo BackupFolder { get; set; }
 
         public FileWatcher(string rootPath)
         {
@@ -20,6 +22,8 @@ namespace EPAM_Task4._1
             CreateLogFolder(RootDirectory, "ChangeHistory");
             LogTextCreate(LogFolder);
             SaveInitialState();
+            TempFolder = new DirectoryInfo(Path.Combine(LogFolder.FullName, "TempData"));
+            //CreateBackupFolder(RootDirectory, "Backup");
 
             Watcher = new FileSystemWatcher(rootPath);
 
@@ -27,7 +31,7 @@ namespace EPAM_Task4._1
             Watcher.Created += WathcerCreated;
             Watcher.Deleted += WathcerDeleted;
             Watcher.Renamed += WathcerRenamed;
-            Watcher.Error += WatcherError;
+            //Watcher.Error += WatcherError;
 
             Watcher.Filter = "*.txt";
             Watcher.IncludeSubdirectories = true;
@@ -36,11 +40,88 @@ namespace EPAM_Task4._1
         public void StartWatching()
         {
             Watcher.EnableRaisingEvents = true;
+            List<string> openFilePaths = GetAllOpenFilePaths(RootDirectory.FullName);
+            ManageTemporaryFolder();
         }
 
         public void EndWatching()
         {
             Watcher.EnableRaisingEvents = false;
+
+            if (Directory.Exists(TempFolder.FullName))
+            {
+                Directory.Delete(TempFolder.FullName, true);
+            }            
+        }
+
+        public List<string> GetLogDates()
+        {
+            List<string> dates = new List<string>();
+            List<string[]> logData = GetLogData();
+
+            for (int i = 0; i < logData.Count; i++)
+            {
+                dates.Add(logData[i][0]);
+            }
+
+            return dates;
+        }
+
+        private void ManageTemporaryFolder()
+        {
+            string tempPath = TempFolder.FullName;
+
+            if (!Directory.Exists(tempPath))
+            {
+                Directory.CreateDirectory(tempPath);
+            }
+
+            List<string> filesPaths = GetAllOpenFilePaths(RootDirectory.FullName);
+            List<string> copyFilesPaths = new List<string>();
+
+            for (int i = 0; i < filesPaths.Count; i++)
+            {
+                string fileName = filesPaths[i].Remove(0, filesPaths[i].LastIndexOf('\\'));
+
+                copyFilesPaths.Add(tempPath + fileName);
+                File.Copy(filesPaths[i], copyFilesPaths[i]);
+            }
+        }
+
+        private void ManageTemporaryFolder(string filePath, WatcherChangeTypes type, string oldFileNamePath = null)
+        {
+            string fileName = filePath.Remove(0, filePath.LastIndexOf('\\'));
+            string oldFileName = null;
+
+            if (!String.IsNullOrEmpty(oldFileNamePath))
+            {
+                oldFileName = oldFileNamePath.Remove(0, filePath.LastIndexOf('\\'));
+            }
+
+            switch (type)
+            {
+                case WatcherChangeTypes.Created:
+                    File.Copy(filePath, $"{LogFolder.FullName}\\{TempFolder.Name}{fileName}");
+                    return;
+
+                case WatcherChangeTypes.Deleted:
+                    File.Delete($"{LogFolder.FullName}\\{TempFolder.Name}{fileName}");
+                    return;
+
+                case WatcherChangeTypes.Changed:
+                    File.Delete($"{LogFolder.FullName}\\{TempFolder.Name}{fileName}");
+                    File.Copy(filePath, $"{LogFolder.FullName}\\{TempFolder.Name}{fileName}");
+                    return;
+
+                case WatcherChangeTypes.Renamed:
+                    File.Delete($"{LogFolder.FullName}\\{TempFolder.Name}{oldFileName}");
+                    File.Copy(filePath, $"{LogFolder.FullName}\\{TempFolder.Name}{fileName}");
+                    return;
+
+                default:
+                    throw new Exception();
+                    return;
+            }
         }
 
         private void SaveInitialState()
@@ -121,6 +202,20 @@ namespace EPAM_Task4._1
             LogFolder.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
         }
 
+        private void CreateBackupFolder(DirectoryInfo directoryInfo, string folderName)
+        {
+            string backupFolderPath = Path.Combine(directoryInfo.FullName, LogFolder.Name, folderName);
+
+            if (Directory.Exists(backupFolderPath))
+            {
+                LogFolder = new DirectoryInfo(backupFolderPath);
+                return;
+            }
+
+            LogFolder = Directory.CreateDirectory(backupFolderPath);
+            LogFolder.Attributes = FileAttributes.Directory;
+        }
+
         private void LogTextCreate(DirectoryInfo logFolderPath)
         {
             string logTextPath = Path.Combine(logFolderPath.FullName, "ChangeHistory.txt");
@@ -150,6 +245,8 @@ namespace EPAM_Task4._1
             }
 
             LogMaintain(e.FullPath, e.ChangeType);
+            ManageTemporaryFolder(e.FullPath, e.ChangeType);
+
             Console.WriteLine("This file was changed: " + e.FullPath);
         }
 
@@ -161,6 +258,8 @@ namespace EPAM_Task4._1
             }
 
             LogMaintain(e.FullPath, e.ChangeType);
+            ManageTemporaryFolder(e.FullPath, e.ChangeType);
+
             Console.WriteLine("Created new txt file on directory: " + e.FullPath);
         }
 
@@ -172,6 +271,8 @@ namespace EPAM_Task4._1
             }
 
             LogMaintain(e.FullPath, e.ChangeType);
+            ManageTemporaryFolder(e.FullPath, e.ChangeType);
+
             Console.WriteLine("File on this direcroty was deleted: " + e.FullPath);
         }
 
@@ -182,24 +283,27 @@ namespace EPAM_Task4._1
                 return;
             }
 
-            LogMaintain(e.FullPath, e.ChangeType);
+            //LogMaintain(e.FullPath, e.ChangeType);
+            LogMaintain(e.FullPath, e.OldFullPath);
+            ManageTemporaryFolder(e.FullPath, e.ChangeType, e.OldFullPath);
+
             Console.WriteLine("Rename:");
             Console.WriteLine("From: " + e.OldFullPath);
             Console.WriteLine("To: " + e.FullPath);
         }
 
-        private void WatcherError(object sender, ErrorEventArgs e)
-        {
-            Exception ex = e.GetException();
+        //private void WatcherError(object sender, ErrorEventArgs e)
+        //{
+        //    Exception ex = e.GetException();
 
-            if (ex != null)
-            {
-                Console.WriteLine("Message: " + ex.Message);
-                Console.WriteLine("Stacktrace:");
-                Console.WriteLine(ex.StackTrace);
-                Console.WriteLine();
-            }
-        }
+        //    if (ex != null)
+        //    {
+        //        Console.WriteLine("Message: " + ex.Message);
+        //        Console.WriteLine("Stacktrace:");
+        //        Console.WriteLine(ex.StackTrace);
+        //        Console.WriteLine();
+        //    }
+        //}
 
         private void LogMaintain(string targetFilePath, WatcherChangeTypes operationType)
         {
@@ -207,10 +311,21 @@ namespace EPAM_Task4._1
 
             LogWrite(targetFilePath, operationType, stringChangeTime);
 
-            if (operationType != WatcherChangeTypes.Deleted)
-            {
-                SaveChanges(targetFilePath, stringChangeTime);
-            }
+            //if (operationType != WatcherChangeTypes.Deleted)
+            //{
+            //    SaveChanges(targetFilePath, stringChangeTime);
+            //}
+
+            SaveBackup(targetFilePath, stringChangeTime, operationType);
+        }
+
+        private void LogMaintain(string targetFilePath, string oldTargetFilePath)
+        {
+            string stringChangeTime = DateTime.Now.ToString("dd.MM.yyyy-HH.mm.ss");
+
+            LogWrite(targetFilePath, oldTargetFilePath, stringChangeTime);
+
+            SaveBackup(targetFilePath, oldTargetFilePath, stringChangeTime);
         }
 
         private void LogWrite(string targetPath, WatcherChangeTypes operationType, string stringChangeTime)
@@ -218,6 +333,16 @@ namespace EPAM_Task4._1
             using (StreamWriter logFileStream = new StreamWriter(LogText.FullName, true))
             {
                 logFileStream.WriteLine($"{stringChangeTime} | {operationType.ToString().ToUpper()} | {targetPath}");
+            }
+        }
+
+        private void LogWrite(string targetPath, string oldTargetPathstring, string stringChangeTime)
+        {
+            using (StreamWriter logFileStream = new StreamWriter(LogText.FullName, true))
+            {
+                logFileStream.WriteLine($"{stringChangeTime} |" +
+                    $" {WatcherChangeTypes.Renamed.ToString().ToUpper()} | " +
+                    $"FROM: {oldTargetPathstring} TO: {targetPath}");
             }
         }
 
@@ -237,7 +362,86 @@ namespace EPAM_Task4._1
             File.Copy(targetFilePath, logPath.FullName);
         }
 
-        private void ReturnChanges(int targetIndex)
+        private void SaveBackup(string targetFilePath, string stringChangeTime, WatcherChangeTypes operationType)
+        {
+            string fileName = targetFilePath.Remove(0, targetFilePath.LastIndexOf('\\'));
+
+            string[] tempFiles = Directory.GetFiles(TempFolder.FullName);
+
+            for (int i = 0; i < tempFiles.Length; i++)
+            {
+                string tempFileName = tempFiles[i].Remove(0, tempFiles[i].LastIndexOf('\\'));
+
+                if (tempFileName == fileName)
+                {
+                    DirectoryInfo logPath = new DirectoryInfo(targetFilePath.Replace(RootDirectory.Name,
+                                $"{RootDirectory.Name}\\{LogFolder.Name}\\{stringChangeTime}"));
+
+                    string logFolderPath = logPath.FullName.Remove(logPath.FullName.LastIndexOf('\\'));
+
+                    if (operationType == WatcherChangeTypes.Changed || operationType == WatcherChangeTypes.Deleted)
+                    {
+                        Directory.CreateDirectory(logFolderPath);
+                        File.Copy(TempFolder.FullName + fileName, logPath.FullName);
+                        return;
+                    }
+
+                    return;
+
+                    //switch (operationType)
+                    //{
+                        
+
+                    //    case WatcherChangeTypes.Created:
+                    //        return;
+
+                    //    case WatcherChangeTypes.Deleted:
+                    //        Directory.CreateDirectory(logFolderPath);
+                    //        File.Copy(TempFolder.FullName + fileName, logPath.FullName);
+                    //        return;
+
+                    //    case WatcherChangeTypes.Changed:
+                    //        Directory.CreateDirectory(logFolderPath);
+                    //        File.Copy(TempFolder.FullName + fileName, logPath.FullName);
+                    //        return;
+
+                    //    case WatcherChangeTypes.Renamed:
+                    //        //TODO
+                    //        return;
+
+                    //    default:
+                    //        throw new Exception();
+                    //        return;
+                    //}
+                }
+            }
+        }
+
+        private void SaveBackup(string targetFilePath, string oldTargetFilePath, string stringChangeTime)
+        {
+            string fileName = targetFilePath.Remove(0, targetFilePath.LastIndexOf('\\'));
+            string oldFileName = oldTargetFilePath.Remove(0, oldTargetFilePath.LastIndexOf('\\'));
+
+            string[] tempFiles = Directory.GetFiles(TempFolder.FullName);
+
+            for (int i = 0; i < tempFiles.Length; i++)
+            {
+                string tempFileName = tempFiles[i].Remove(0, tempFiles[i].LastIndexOf('\\'));
+
+                if (tempFileName == oldFileName)
+                {
+                    DirectoryInfo logPath = new DirectoryInfo(oldTargetFilePath.Replace(RootDirectory.Name,
+                                $"{RootDirectory.Name}\\{LogFolder.Name}\\{stringChangeTime}"));
+
+                    string logFolderPath = logPath.FullName.Remove(logPath.FullName.LastIndexOf('\\'));
+
+                    Directory.CreateDirectory(logFolderPath);
+                    File.Copy(TempFolder.FullName + oldFileName, logPath.FullName);
+                }
+            }
+        }
+
+        public void ReturnChanges(int targetIndex)
         {
             List<string[]> logData = GetLogData();
 
@@ -247,14 +451,13 @@ namespace EPAM_Task4._1
             while (currentStep != returnCount)
             {
                 string[] currentLogData = logData[logData.Count - currentStep - 1];
-                string[] oldLogData = logData[logData.Count - currentStep - 2];
 
                 for (int i = 0; i < currentLogData.Length; i++)
                 {
                     currentLogData[i] = currentLogData[i].Trim();
                 }
 
-                DataReturn(currentLogData, oldLogData);
+                DataReturn(currentLogData);
                 currentStep++;
             }
         }
@@ -277,7 +480,7 @@ namespace EPAM_Task4._1
             }
         }
 
-        private void DataReturn(string[] currentLogData, string[] oldLogData)
+        private void DataReturn(string[] currentLogData)
         {
             //logData[0] - string data
             //logData[1] - action type
@@ -286,19 +489,39 @@ namespace EPAM_Task4._1
             switch (currentLogData[1])
             {
                 case "CHANGED":
-                    //TODO: restore data before changing
-                    break;
+                    //string targetPath = currentLogData[2].Replace($"{LogFolder.Name}\\{currentLogData[0]}", "");
+
+                    //if (File.Exists(targetPath))
+                    //{
+                    //    File.Delete(targetPath);
+                    //}
+
+                    //string targetFileDirectory = targetPath.Remove(targetPath.LastIndexOf('\\'));
+
+                    //if (!Directory.Exists(targetFileDirectory))
+                    //{
+                    //    Directory.CreateDirectory(targetFileDirectory);
+                    //}
+
+                    //File.Move(currentLogData[2], targetPath);
+
+                    DataRestore(currentLogData);
+                    
+                    return;
 
                 case "CREATED":
-                    //TODO: delete data
-                    break;
+                    if (File.Exists(currentLogData[2]))
+                    {
+                        File.Delete(currentLogData[2]);
+                    }
+                    return;
 
                 case "RENAMED":
                     //TODO: restore old name
                     break;
 
                 case "DELETED":
-                    //TODO: create file
+                    DataRestore(currentLogData);
                     break;
 
                 default:
@@ -306,9 +529,26 @@ namespace EPAM_Task4._1
             }
         }
 
-        private void DataRestore()
+        private void DataRestore(string[] logData)
         {
+            string targetPath = logData[2].Replace($"{LogFolder.Name}\\{logData[0]}", "");
 
+            string logPath = logData[2].Replace(RootDirectory.Name,
+                $"{RootDirectory.Name}\\{LogFolder.Name}\\{logData[0]}");
+
+            if (File.Exists(targetPath))
+            {
+                File.Delete(targetPath);
+            }
+
+            string targetFileDirectory = targetPath.Remove(targetPath.LastIndexOf('\\'));
+
+            if (!Directory.Exists(targetFileDirectory))
+            {
+                Directory.CreateDirectory(targetFileDirectory);
+            }
+
+            File.Move(logPath, logData[2]);
         }
 
         private void DataDelete()
