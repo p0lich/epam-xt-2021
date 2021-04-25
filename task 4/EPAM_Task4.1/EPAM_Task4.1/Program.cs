@@ -8,13 +8,18 @@ namespace EPAM_Task4._1
     {
         static void Main(string[] args)
         {
-            string menu = "1 - watch for changes\n" +
+            string menu =
+                "1 - watch for changes\n" +
                 "2 - restore data\n" +
                 "3 - exit";
 
             int option;
 
-            FileWatcher watcher = new FileWatcher(@"C:\Users\Alex\Documents\epam-xt-2021\task 4\TestFolder");
+            Console.WriteLine("Input path to working folder:");
+            //string rootPath = @"C:\Users\Alex\Documents\epam-xt-2021\task 4\TestFolder";
+            string rootPath = Console.ReadLine();
+            
+            FileWatcher watcher = new FileWatcher(rootPath);
 
             do
             {
@@ -31,13 +36,7 @@ namespace EPAM_Task4._1
 
                     case 2:
                         watcher.EndWatching();
-                        List<string> changeDates = watcher.GetLogDates();
-                        for (int i = 0; i < changeDates.Count; i++)
-                        {
-                            Console.WriteLine((i + 1).ToString() + " - " + changeDates[i]);
-                        }
-
-                        int targetDate = InputInteger();
+                        int targetDate = ShowAndInputDataIndex(watcher);
                         watcher.ReturnChanges(targetDate);
                         break;
 
@@ -49,25 +48,6 @@ namespace EPAM_Task4._1
                         break;
                 }
             } while (true);
-
-
-
-
-
-
-
-
-
-
-
-
-
-            //List<string> filePaths = FileWatcher.GetAllOpenFilePaths(@"C:\Users\Alex\Documents\epam-xt-2021\task 4\TestFolder"); ;
-
-            //foreach (var item in filePaths)
-            //{
-            //    Console.WriteLine(item);
-            //}
         }
 
         public static int InputInteger()
@@ -79,6 +59,30 @@ namespace EPAM_Task4._1
                     return num;
                 }
             }
+        }
+
+        public static int ShowAndInputDataIndex(FileWatcher watcher)
+        {
+            List<string> changeDates = watcher.GetChangeDates();
+
+            for (int i = 0; i < changeDates.Count; i++)
+            {
+                Console.WriteLine((i + 1).ToString() + " - " + changeDates[i]);
+            }
+
+            int targetDate;
+
+            do
+            {
+                targetDate = InputInteger();
+
+                if (targetDate <= changeDates.Count)
+                {
+                    return targetDate;
+                }
+
+                Console.WriteLine("Wrong input. Try again");
+            } while (true);
         }
     }
 }
