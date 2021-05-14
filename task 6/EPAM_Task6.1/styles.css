@@ -1,0 +1,9 @@
+.Menu_List {
+    width: 200px;
+    background-color: #F9E04E;
+    color: darkred;
+    border: 1px solid black;
+    border-radius: 5px;
+    box-shadow: 3px 3px darkred;
+    padding-left: 10px;
+}

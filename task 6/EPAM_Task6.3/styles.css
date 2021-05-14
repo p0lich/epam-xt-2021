@@ -1,0 +1,31 @@
+.Pointer_Block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Pointer {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    border: 5px solid transparent;
+    border-bottom-color:lightblue;
+    border-right-color:lightblue; 
+    left: calc(50% - 20px);
+    transform: rotate(225deg);
+    background-color: lightskyblue;
+    box-sizing: border-box;
+}
+
+.Text_Block {
+    width: 100vw;
+    margin-top: 15px;
+    padding: 5px 0px 5px 0px;
+    display: flex;
+    justify-content: center;
+    color: white;
+    font-size: 1.2em;
+    background-color: lightskyblue;
+    border: 5px solid lightblue; 
+    box-sizing: border-box;
+}

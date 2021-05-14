@@ -1,0 +1,51 @@
+.Headline {
+    margin-left: 25px;
+}
+
+.Reg_Window {
+    width: 500px;
+    height: 280px;
+    background-color: #3B91CB;
+    border: 2px solid blue;
+    color: white;
+    font-family: sans-serif;
+}
+
+.Input_Block {
+    height: 100px;
+    margin: 5px 25px 40px 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.Email_Block {
+    display: flex;
+    flex-direction: column;
+}
+
+.Password_Section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;  
+}
+
+.Password_Block {
+    width: 210px;
+}
+
+.Input_Field {
+    width: 210px;
+    box-sizing: border-box;
+}
+
+.Email_Field {
+    width: 450px; 
+}
+
+.Button {
+    margin-left: 25px;
+    padding: 8px;
+    background-color: #EED674;
+    border: none;
+}
