@@ -1,30 +1,51 @@
-﻿@{
+﻿@using EPAM_Task8.BLL
+@using UpdatedEntity
+
+@{
     Layout = @"~/Pages/Layout/_BasicLayout.cshtml";
+    List<Award> availableAwards = UpdatedLogicBL.GetAwailableAwards();
+    List<User> existUsers = UpdatedLogicBL.GetAllUsers();
 }
 
 <h1>List of avaible awards:</h1>
 
-<div class="Awards_Container">
-    <p>Title: </p>
-    <input class="Input_Button" type="submit" value="Edit award">
-</div>
+<form method="post" class="Awards_Container">
+    @{for (int i = 0; i < availableAwards.Count; i++)
+        {
+            <div class="Award">
+                <p>@availableAwards[i].Title</p>
+            </div>
+            <input class="Input_Button" name="changeAward" type="submit" value="Edit award">
+        }
+    }
+</form>
 
 <h1>List of user and thier awards:</h1>
 
-<div class="Users_Container">
-    <div>
-        <ul>
-            <li>Name: </li>
-            <li>Date of birth: </li>
-            <li>Age: </li>
-            <li>
-                List of Awards:
-                <ul class="UserAwards">
-                    <li></li>
+<form method="post" class="Users_Container">
+    <div class="User">
+        @{for (int i = 0; i < existUsers.Count; i++)
+            {
+                List<Award> userAwards = UpdatedLogicBL.GetUserAwards(existUsers[i].Id);
+                <ul>
+                    <li>Name: @existUsers[i].Name</li>
+                    <li>Date of birth: @existUsers[i].DateOfBirth.ToString("dd-MM-yyyy")</li>
+                    <li>Age: @existUsers[i].Age</li>
+                    <li>
+                        List of Awards:
+                        <ul class="UserAwards">
+                            @{for (int j = 0; j < userAwards.Count; j++)
+                                {
+                                    <li>
+                                        @userAwards[i].Title
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </li>
                 </ul>
-            </li>
-        </ul>
-
-        <input class="Input_Button" type="submit" value="Edit user">
+                <input class="Input_Button" name="changeUser" type="submit" value="Edit award">
+            }
+        }
     </div>
-</div>
+</form>

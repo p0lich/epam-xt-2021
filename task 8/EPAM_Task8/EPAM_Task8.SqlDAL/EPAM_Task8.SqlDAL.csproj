@@ -67,5 +67,15 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EPAM_Task8.Entities\EPAM_Task8.Entities.csproj">
+      <Project>{3ce8d897-0337-47a8-a9e0-236c95ddce0e}</Project>
+      <Name>EPAM_Task8.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UpdatedEntity\UpdatedEntity.csproj">
+      <Project>{610e89a4-63e0-475e-9478-1efd256451d2}</Project>
+      <Name>UpdatedEntity</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

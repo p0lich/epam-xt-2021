@@ -1,15 +1,28 @@
 ﻿@{
     Layout = @"~/Pages/Layout/_BasicLayout.cshtml";
+
+    if (IsPost)
+    {
+        string name = Request["userName"];
+        string password = Request["userPassword"];
+
+        Response.Redirect("/Pages/UserPage");
+    }
 }
 
 <form class="Registration_From" method="post">
     <div class="Input_Field">
-        <p>Name: </p><input type="text" required />
+        <p>Name: </p><input type="text" name="userName" required />
     </div>
 
     <div class="Input_Field">
-        <p>Password: </p><input type="password" required />
+        <p>Password: </p><input type="password" name="userPassword" required />
     </div>
 
     <input type="submit" />
 </form>
+
+<button id="registerBtn" type="button" class="Button_PageSwap"/>
+<script>
+
+</script>

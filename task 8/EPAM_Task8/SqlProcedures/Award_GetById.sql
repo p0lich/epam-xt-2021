@@ -1,0 +1,17 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[Award_GetById]
+	@id int
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	SELECT TOP 1
+		Id, Title
+		FROM Awards
+		WHERE Id = @id
+END
+GO

@@ -55,5 +55,10 @@ namespace EPAM_Task8.BLL
         {
 
         }
+
+        public static string EncryptPassword()
+        {
+            return null;
+        }
     }
 }
