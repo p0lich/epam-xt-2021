@@ -32,7 +32,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,10 +43,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActiveAwardData.cs" />
     <Compile Include="ActiveUserData.cs" />
     <Compile Include="LogicBL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestController.cs" />
+    <Compile Include="RequestIdStorage.cs" />
     <Compile Include="UpdatedLogicBL.cs" />
+    <Compile Include="UserRoleProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EPAM_Task8.DAL\EPAM_Task8.DAL.csproj">

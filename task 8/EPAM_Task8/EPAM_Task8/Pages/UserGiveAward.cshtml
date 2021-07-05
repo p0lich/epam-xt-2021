@@ -1,0 +1,32 @@
+﻿@using EPAM_Task8.BLL
+@using UpdatedEntity
+
+@{
+    Layout = @"~/Pages/Layout/_BasicLayout.cshtml";
+
+    User user = UpdatedLogicBL.GetUser(ActiveUserData.id);
+    List<Award> availableAwards = UpdatedLogicBL.GetAwailableAwards();
+
+    if (IsPost)
+    {
+        UpdatedLogicBL.GiveAward(user.Id, Int32.Parse(Request.Form.AllKeys[1]));
+
+        Response.Redirect(@"~\Pages\AdminPage.cshtml");
+    }
+}
+
+<h1>Select award for @user.Name</h1>
+
+<div class="Awards_Container">
+    @{for (int i = 0; i < availableAwards.Count; i++)
+        {
+            <form method="post">
+                <div class="Award">
+                    <p>@availableAwards[i].Title</p>
+                </div>
+                <input class="Input_Button" name="giveAward" type="submit" value="Give award">
+                <input name="@availableAwards[i].Id" type="hidden">
+            </form>
+        }
+    }
+</div>

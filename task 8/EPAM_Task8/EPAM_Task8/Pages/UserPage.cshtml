@@ -20,7 +20,7 @@
 
 </div>
 
-<h1>List of user and thier awards:</h1>
+<h1>List of users and thier awards:</h1>
 
 <div class="Users_Container">
     <div class="User">
@@ -33,19 +33,27 @@
                     <li>Age: @existUsers[i].Age</li>
                     <li>
                         List of Awards:
-                            <ul class="UserAwards">
-                                @{for (int j = 0; j < userAwards.Count; j++)
-                                    {
-                                        <li>
-                                            @userAwards[i].Title
-                                        </li>
-                                    }
+                        <ul class="UserAwards">
+                            @{for (int j = 0; j < userAwards.Count; j++)
+                                {
+                                    <li>
+                                        @userAwards[j].Title
+                                    </li>
                                 }
+                            }
 
-                            </ul>
+                        </ul>
                     </li>
                 </ul>
             }
         }
     </div>
 </div>
+
+<button id="signOutBtn" class="SignOut_Button" type="button">Sign out</button>
+
+<script>
+    $('#signOutBtn').click(function () {
+        location.href = '/Pages/signOutPage';
+    })
+</script>

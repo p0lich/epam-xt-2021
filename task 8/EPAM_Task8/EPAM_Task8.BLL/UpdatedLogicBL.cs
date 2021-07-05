@@ -30,9 +30,9 @@ namespace EPAM_Task8.BLL
             MySqlDAL.AddAward(award);
         }
 
-        public static void GiveAward(User user, Award award)
+        public static void GiveAward(int userId, int awardId)
         {
-            MySqlDAL.GiveAward(user.Id, award.Id);
+            MySqlDAL.GiveAward(userId, awardId);
         }
 
         public static List<Award> GetAwailableAwards()
@@ -48,6 +48,11 @@ namespace EPAM_Task8.BLL
         public static bool DeleteUser(int userId)
         {
             return MySqlDAL.RemoveUser(userId);
+        }
+
+        public static bool DeleteAward(int awardId)
+        {
+            return MySqlDAL.RemoveAward(awardId);
         }
 
         public static User GetUser(int userId)
@@ -78,6 +83,21 @@ namespace EPAM_Task8.BLL
         public static List<User> GetAwardUsers(int awardId)
         {
             return MySqlDAL.GetAwardUsers(awardId);
+        }
+
+        public static bool TakeUserAward(int userId, int awardId)
+        {
+            return MySqlDAL.TakeUserAward(userId, awardId);
+        }
+
+        public static bool UpdateUser(User user)
+        {
+            return MySqlDAL.EditUser(user);
+        }
+
+        public static bool UpdateAward(Award award)
+        {
+            return MySqlDAL.EditAward(award);
         }
     }
 }

@@ -85,6 +85,12 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Pages\Partial\_ErrorPartial.cshtml" />
+    <Content Include="Pages\AwardChangePage.cshtml" />
+    <Content Include="Pages\UserChangePage.cshtml" />
+    <Content Include="Pages\UserGiveAward.cshtml" />
+    <Content Include="Pages\SignOutPage.cshtml" />
+    <Content Include="Pages\Registration\Web.config" />
     <None Include="Scripts\jquery-3.6.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.6.0.js" />
     <Content Include="Scripts\jquery-3.6.0.min.js" />
@@ -101,7 +107,7 @@
     <None Include="packages.config" />
     <Content Include="Pages\Layout\_BasicLayout.cshtml" />
     <Content Include="Pages\LoginPage.cshtml" />
-    <Content Include="Pages\RegistrationPage.cshtml" />
+    <Content Include="Pages\Registration\RegistrationPage.cshtml" />
     <Content Include="Pages\UserPage.cshtml" />
     <Content Include="Pages\AdminPage.cshtml" />
     <Content Include="Scripts\jquery-3.6.0.slim.min.map" />

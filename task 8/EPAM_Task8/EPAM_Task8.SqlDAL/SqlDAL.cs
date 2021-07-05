@@ -36,11 +36,6 @@ namespace EPAM_Task8.SqlDAL
 
                 var result = command.ExecuteScalar();
 
-                if (result == null)
-                {
-                    throw new InvalidOperationException(string.Format("Something go wrong during user creation"));
-                }
-
                 return true;
             }
         }
@@ -70,11 +65,6 @@ namespace EPAM_Task8.SqlDAL
 
                 var result = command.ExecuteScalar();
 
-                //if (result == null)
-                //{
-                //    throw new InvalidOperationException(string.Format("Something go wrong during user creation"));
-                //}
-
                 return true;
             }
         }
@@ -96,18 +86,18 @@ namespace EPAM_Task8.SqlDAL
 
                 var reader = command.ExecuteReader();
 
-                if (reader == null)
+                if (reader.Read())
                 {
-                    throw new ArgumentNullException(string.Format("User not found"));
-                }
-
-                return new User(
-                    id: (int)reader["id"],
+                    return new User(
+                    id: (int)reader["Id"],
                     isAdmin: (bool)reader["IsAdmin"],
                     dateOfBirth: (DateTime)reader["DateOfBirth"],
                     name: reader["Name"] as string,
                     password: reader["Password"] as string
                     );
+                }
+
+                throw new ArgumentNullException(string.Format("Cant find user with such id"));
             }
         }
 
@@ -129,18 +119,49 @@ namespace EPAM_Task8.SqlDAL
 
                 var reader = command.ExecuteReader();
 
-                if (reader == null)
+                if (reader.Read())
                 {
-                    throw new ArgumentNullException(string.Format("Cant find user with such name and password"));
-                }
-
-                return new User(
-                    id: (int)reader["id"],
+                    return new User(
+                    id: (int)reader["Id"],
                     isAdmin: (bool)reader["IsAdmin"],
                     dateOfBirth: (DateTime)reader["DateOfBirth"],
                     name: reader["Name"] as string,
                     password: reader["Password"] as string
                     );
+                }
+
+                return null;
+            }
+        }
+
+        public static User GetUser(string userName)
+        {
+            using (_connection = new SqlConnection(connectString))
+            {
+                string strProc = "dbo.User_GetByName";
+                SqlCommand command = new SqlCommand(strProc, _connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@name", userName);
+
+                _connection.Open();
+
+                var reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    return new User(
+                    id: (int)reader["Id"],
+                    isAdmin: (bool)reader["IsAdmin"],
+                    dateOfBirth: (DateTime)reader["DateOfBirth"],
+                    name: reader["Name"] as string,
+                    password: reader["Password"] as string
+                    );
+                }
+
+                throw new ArgumentNullException(string.Format("Cant find user with such name"));
             }
         }
 
@@ -160,7 +181,7 @@ namespace EPAM_Task8.SqlDAL
                 while (reader.Read())
                 {
                     users.Add(new User(
-                        id: (int)reader["id"],
+                        id: (int)reader["Id"],
                         isAdmin: (bool)reader["IsAdmin"],
                         dateOfBirth: (DateTime)reader["DateOfBirth"],
                         name: reader["Name"] as string,
@@ -178,13 +199,13 @@ namespace EPAM_Task8.SqlDAL
 
         public static bool AddAward(Award award)
         {
+            if (!IsAwardUnique(award.Title))
+            {
+                throw new ArgumentException(string.Format("Award with title {0} already exist", award.Title));
+            }
+
             using (_connection = new SqlConnection(connectString))
             {
-                if (!IsAwardUnique(award.Title))
-                {
-                    throw new ArgumentException(string.Format("Award with title {0} already exist", award.Title));
-                }
-
                 string strProc = "dbo.CreateAward";
                 SqlCommand command = new SqlCommand(strProc, _connection)
                 {
@@ -197,11 +218,6 @@ namespace EPAM_Task8.SqlDAL
 
                 var result = command.ExecuteScalar();
 
-                if (result == null)
-                {
-                    throw new InvalidOperationException(string.Format("Something go wrong during user creation"));
-                }
-
                 return true;
             }
         }
@@ -213,13 +229,13 @@ namespace EPAM_Task8.SqlDAL
 
         public static bool EditAward(Award award)
         {
+            if (!IsAwardUnique(award.Title))
+            {
+                throw new ArgumentException(string.Format("Award with title {0} already exist", award.Title));
+            }
+
             using (_connection = new SqlConnection(connectString))
             {
-                if (!IsAwardUnique(award.Title))
-                {
-                    throw new ArgumentException(string.Format("Award with title {0} already exist", award.Title));
-                }
-
                 string strProc = "dbo.ChangeAward";
                 SqlCommand command = new SqlCommand(strProc, _connection)
                 {
@@ -232,11 +248,6 @@ namespace EPAM_Task8.SqlDAL
                 _connection.Open();
 
                 var result = command.ExecuteScalar();
-
-                //if (result == null)
-                //{
-                //    throw new InvalidOperationException(string.Format("Something go wrong during user creation"));
-                //}
 
                 return true;
             }
@@ -259,10 +270,15 @@ namespace EPAM_Task8.SqlDAL
 
                 var reader = command.ExecuteReader();
 
-                return new Award(
-                    id: (int)reader["id"],
+                if (reader.Read())
+                {
+                    return new Award(
+                    id: (int)reader["Id"],
                     title: reader["Title"] as string
                     );
+                }
+
+                throw new ArgumentNullException(string.Format("Cant find award with such id"));
             }
         }
 
@@ -282,7 +298,7 @@ namespace EPAM_Task8.SqlDAL
                 while (reader.Read())
                 {
                     awards.Add(new Award(
-                        id: (int)reader["id"],
+                        id: (int)reader["Id"],
                         title: reader["Title"] as string
                         ));
                 }
@@ -335,6 +351,27 @@ namespace EPAM_Task8.SqlDAL
             }
         }
 
+        public static bool TakeUserAward(int userId, int awardId)
+        {
+            using (_connection = new SqlConnection(connectString))
+            {
+                string strProc = "dbo.User_RemoveAward";
+                SqlCommand command = new SqlCommand(strProc, _connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@id_user", userId);
+                command.Parameters.AddWithValue("@id_award", awardId);
+
+                _connection.Open();
+
+                var result = command.ExecuteScalar();
+
+                return true;
+            }
+        }
+
         private static bool RemoveNote(int id, string strProc)
         {
             using (_connection = new SqlConnection(connectString))
@@ -350,8 +387,6 @@ namespace EPAM_Task8.SqlDAL
 
                 var result = command.ExecuteScalar();
 
-                // TODO: check result
-
                 return true;
             }
         }
@@ -362,9 +397,10 @@ namespace EPAM_Task8.SqlDAL
             {
                 string stProc = "dbo.User_GetAwards";
 
-                SqlCommand command = new SqlCommand(stProc, _connection);
-                command.CommandType = System.Data.CommandType.StoredProcedure;
-                
+                SqlCommand command = new SqlCommand(stProc, _connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                };
 
                 command.Parameters.AddWithValue("@id", userId);
 
@@ -376,9 +412,6 @@ namespace EPAM_Task8.SqlDAL
 
                 while (reader.Read())
                 {
-                    int a = (int)reader["Id"];
-                    string b = reader["Title"] as string;
-
                     userAwards.Add(new Award(
                         id: (int)reader["Id"],
                         title: reader["Title"] as string
@@ -411,7 +444,7 @@ namespace EPAM_Task8.SqlDAL
                 while (reader.Read())
                 {
                     awardUsers.Add(new User(
-                        id: (int)reader["id"],
+                        id: (int)reader["Id"],
                         isAdmin: (bool)reader["IsAdmin"],
                         dateOfBirth: (DateTime)reader["DateOfBirth"],
                         name: reader["Name"] as string,

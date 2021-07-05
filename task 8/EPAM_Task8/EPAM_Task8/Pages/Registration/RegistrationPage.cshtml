@@ -1,0 +1,59 @@
+﻿@using EPAM_Task8.BLL
+@using UpdatedEntity
+
+@{
+    Layout = @"~/Pages/Layout/_BasicLayout.cshtml";
+
+    if (IsPost)
+    {
+        if (Request["userPassword"] == Request["userRepPassword"])
+        {
+            User user = new User(
+                id: 0,
+                isAdmin: false,
+                dateOfBirth: DateTime.Parse(Request["userDateOfBirth"]),
+                name: Request["userName"],
+                password: Request["userPassword"]
+                );
+
+            UpdatedLogicBL.CreateUser(user);
+
+            FormsAuthentication.SetAuthCookie(user.Name, true);
+
+            if (user.IsAdmin)
+            {
+                Response.Redirect("~/Pages/AdminPage");
+            }
+
+            Response.Redirect("~/Pages/UserPage");
+        }
+    }
+}
+
+<form class="Registration_From" method="post">
+    <div class="Input_Field">
+        <p>Name: </p><input type="text" name="userName" required/>
+    </div>
+
+    <div class="Input_Field">
+        <p>Date of birth: </p><input type="date" name="userDateOfBirth" required/>
+    </div>
+
+    <div class="Input_Field">
+        <p>Password: </p><input type="password" name="userPassword" required/>
+    </div>
+
+    <div class="Input_Field">
+        <p>Repeat Password: </p><input type="password" name="userRepPassword" required/>
+    </div>
+
+    <input class="Input_Button" name="registerUser" type="submit" value="Register" />
+</form>
+
+<button id="toLoginPage" class="Button_PageSwap" name="loginBtn" type="button">Go to login page</button>
+
+<script>
+    $('#toLoginPage').click(function () {
+        location.href = '/Pages/LoginPage';
+    })
+</script>
