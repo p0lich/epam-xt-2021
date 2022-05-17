@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script type="text/javascript" src="EPAM_Task7.1/char_remover.js"></script>
+    <script type="text/javascript" src="EPAM_Task7.2/math_calculator.js"></script>
+    <script type="text/javascript" src="EPAM_Task7.3/mini_crud.js"></script>
+
+    <script>
+        let testValue1 = "У попа была собака";
+        let test1 = remover(testValue1);
+        console.log(test1);
+
+        let testValue2 = "3.5 +4*10-5.3 /5 =";
+        let test2 = parse(testValue2);
+        console.log(test2);
+
+        let testValue31 = {a1: 1, b1: 2};
+        let testValue32 = {a2: 11, b2: 22};
+        let testValue33 = {a3: 111, b3: 222};
+
+        let test3 = new Service();
+
+        // add test
+        console.log("add test");
+        test3.add(testValue31);
+        test3.add(testValue32);
+        test3.add(testValue33);
+        console.log(test3.getAll());
+
+        // getById test
+        console.log("getById test");
+        console.log(test3.getById("1"));
+        console.log(test3.getById("10"));
+
+        // getAll test
+        console.log("getAll test");
+        console.log(test3.getAll());
+
+        // deleteById test
+        console.log("deleteById test");
+        console.log(test3.deleteById("1"));
+        console.log(test3.getAll());
+
+        // updateById test
+        console.log("updateById test");
+        let updObj = {a2: 122};
+
+        console.log(test3.updateById("2", updObj));
+        console.log(test3.getAll());
+
+        // replaceByid test
+        console.log("replaceByid test");
+        let replObj = {a4: 1111, b4: 2222};
+
+        console.log(test3.replaceById("2", replObj));
+        console.log(test3.getAll());
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+﻿@using EPAM_Task8.BLL
+@using UpdatedEntity
+
+@{if (!User.IsInRole("admin"))
+    {
+        Response.Redirect("~/Pages/UserPage.cshtml");
+    }
+
+}
+
+@{
+    Layout = @"~/Pages/Layout/_BasicLayout.cshtml";
+    List<Award> availableAwards = UpdatedLogicBL.GetAwailableAwards();
+    List<User> existUsers = UpdatedLogicBL.GetAllUsers();
+
+    if (IsPost)
+    {
+        if (Request.Form.AllKeys.Contains("awardSubmit"))
+        {
+            UpdatedLogicBL.CreateAward(new Award(0, Request["awardTitle"]));
+        }
+
+        if (Request.Form.AllKeys.Contains("changeAward"))
+        {
+            // 1 - awardId
+            int f = Int32.Parse(Request.Form.AllKeys[1]);
+            Award user = UpdatedLogicBL.GetAward(Int32.Parse(Request.Form.AllKeys[1]));
+            ActiveAwardData.id = user.Id;
+
+            Response.Redirect("~/Pages/AwardChangePage.cshtml");
+        }
+
+        if (Request.Form.AllKeys.Contains("deleteAward"))
+        {
+            // 1 - awardId
+
+            UpdatedLogicBL.DeleteAward(Int32.Parse(Request.Form.AllKeys[1]));
+        }
+
+        if (Request.Form.AllKeys.Contains("takeAward"))
+        {
+            // 1 - userId
+            // 2 - awardId
+
+            UpdatedLogicBL.TakeUserAward(
+                Int32.Parse(Request.Form.AllKeys[1]),
+                Int32.Parse(Request.Form.AllKeys[2])
+                );
+        }
+
+        if (Request.Form.AllKeys.Contains("giveAward"))
+        {
+            // 1 - userId
+
+            User user = UpdatedLogicBL.GetUser(Int32.Parse(Request.Form.AllKeys[1]));
+            ActiveUserData.id = user.Id;
+
+            Response.Redirect("~/Pages/UserGiveAward.cshtml");
+        }
+
+        if (Request.Form.AllKeys.Contains("changeUser"))
+        {
+            // 1 - userId
+
+            User user = UpdatedLogicBL.GetUser(Int32.Parse(Request.Form.AllKeys[1]));
+            ActiveUserData.id = user.Id;
+
+            Response.Redirect("~/Pages/UserChangePage.cshtml");
+        }
+
+        if (Request.Form.AllKeys.Contains("deleteUser"))
+        {
+            // 1 - userId
+
+            UpdatedLogicBL.DeleteUser(Int32.Parse(Request.Form.AllKeys[1]));
+        }
+    }
+}
+
+<h1>Add award</h1>
+<form class="Input_Form" method="post">
+    <p>Title:</p>
+    <input name="awardTitle" type="text" required />
+
+    <input class="Input_Button" name="awardSubmit" type="submit" value="Create">
+</form>
+
+<h1>List of avaible awards:</h1>
+
+<div class="Awards_Container">
+    @{for (int i = 0; i < availableAwards.Count; i++)
+        {
+            <form method="post">
+                <div class="Award">
+                    <p>@availableAwards[i].Title</p>
+                </div>
+                <input class="Input_Button" name="changeAward" type="submit" value="Edit award">
+                <input class="Input_Button Delete" name="deleteAward" type="submit" value="Delete award">
+                <input name="@availableAwards[i].Id" type="hidden">
+            </form>
+        }
+    }
+</div>
+
+<form method="post">
+</form>
+
+<h1>List of users and thier awards:</h1>
+
+<div class="Users_Container">
+    @{for (int i = 0; i < existUsers.Count; i++)
+        {
+            <div class="User">
+                <ul>
+                    <li>Name: @existUsers[i].Name</li>
+                    <li>Date of birth: @existUsers[i].DateOfBirth.ToString("dd-MM-yyyy")</li>
+                    <li>Age: @existUsers[i].Age</li>
+                    <li>
+                        List of Awards:
+                        @{List<Award> userAwards = UpdatedLogicBL.GetUserAwards(existUsers[i].Id);}
+                        <div class="UserAwards">
+                            @{for (int j = 0; j < userAwards.Count; j++)
+                                {
+                                    <form method="post">
+                                        @userAwards[j].Title
+                                        <input class="Input_Button Delete" name="takeAward" type="submit" value="Delete award">
+                                        <input name="@existUsers[i].Id" type="hidden">
+                                        <input name="@userAwards[j].Id" type="hidden">
+                                    </form>
+                                }
+                            }
+                        </div>
+                    </li>
+                </ul>
+                <form method="post">
+                    <input class="Input_Button" name="giveAward" type="submit" value="Give award">
+                    <input class="Input_Button" name="changeUser" type="submit" value="Edit user">
+                    <input class="Input_Button Delete" name="deleteUser" type="submit" value="Delete user">
+                    <input name="@existUsers[i].Id" type="hidden">
+                </form>
+            </div>
+        }
+    }
+</div>
+
+<button id="signOutBtn" class="SignOut_Button" type="button">Sign out</button>
+
+<script>
+    $('#signOutBtn').click(function () {
+        location.href = '/Pages/signOutPage';
+    })
+</script>

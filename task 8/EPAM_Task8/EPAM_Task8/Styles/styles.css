@@ -1,0 +1,89 @@
+﻿.Awards_Container {
+    display: flex;
+    border: 3px solid black;
+    width: fit-content;
+}
+
+.Users_Container {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    max-width: fit-content;
+}
+
+.Award {
+    background-color: #F1ED00;
+    border: 1px solid black;
+    padding: 2px;
+    margin: 0 2px 0 2px;
+}
+
+.User {
+    background-color: #77E2FF;
+    font-size: 1.3em;
+}
+
+.Input_Form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+}
+
+.Input_Button {
+    background-color: #8ADE00;
+    border: 1px solid black;
+    width: 100px;
+    padding: 3px;
+    margin: 8px 2px 0 2px;
+}
+
+.Delete {
+    background-color: #FD2528;
+}
+
+.Post_Alert {
+    background-color: #D2FFBC;
+    padding: 10px;
+    margin: 10px 0 10px 0;
+    width: 150px;
+    text-align: center;
+}
+
+.Registration_From {
+    display: flex;
+    flex-direction: column;
+    background-color: #00AFDE;
+    align-items: center;
+    margin-left: 35%;
+    width: 30%;
+    border: 2px solid black;
+}
+
+.Input_Field {
+    max-width: 200px;
+}
+
+.UserAwards {
+    background-color: #A6FECD;
+    width: fit-content;
+}
+
+.Button_PageSwap {
+    background-color: #949CEE;
+    margin-top: 15px;
+    margin-left: 40%;
+    width: 20%;
+}
+
+.Change_Form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px solid black;
+    background-color: #00AFDE;
+}
+
+.SignOut_Button {
+    background-color: #7C84FB;
+    padding: 5px;
+}

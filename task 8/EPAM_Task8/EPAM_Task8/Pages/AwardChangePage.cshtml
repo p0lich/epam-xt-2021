@@ -1,0 +1,26 @@
+﻿@using EPAM_Task8.BLL
+@using UpdatedEntity
+
+@{
+    Layout = @"~\Pages\Layout\_BasicLayout.cshtml";
+
+    Award award = UpdatedLogicBL.GetAward(ActiveAwardData.id);
+
+    if (IsPost)
+    {
+        UpdatedLogicBL.UpdateAward(new Award(
+            id: award.Id,
+            title: Request["awardTitle"]
+            ));
+
+        Response.Redirect(@"~\Pages\AdminPage.cshtml");
+    }
+}
+
+<form method="post" class="Change_Form">
+    <div class="Input_Field">
+        <p>Title: </p><input type="text" name="awardTitle" value="@award.Title" required />
+    </div>
+
+    <input class="Input_Button" name="updateAward" type="submit" value="Update" />
+</form>

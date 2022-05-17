@@ -1,0 +1,44 @@
+﻿@using EPAM_Task8.BLL
+@using UpdatedEntity
+
+@{
+    Layout = @"~/Pages/Layout/_BasicLayout.cshtml";
+
+    if (IsPost)
+    {
+        User user = UpdatedLogicBL.GetUser(Request["userName"], Request["userPassword"]);
+
+        if (user != null)
+        {
+            FormsAuthentication.SetAuthCookie(user.Name, true);
+
+            var a = HttpContext.Current.User.Identity;
+            if (user.IsAdmin)
+            {
+                Response.Redirect("~/Pages/AdminPage");
+            }
+
+            Response.Redirect("~/Pages/UserPage");
+        }
+    }
+}
+
+<form class="Registration_From" method="post">
+    <div class="Input_Field">
+        <p>Name: </p><input type="text" name="userName" required />
+    </div>
+
+    <div class="Input_Field">
+        <p>Password: </p><input type="password" name="userPassword" required />
+    </div>
+
+    <input class="Input_Button" type="submit" name="login"/>
+</form>
+
+<button id="toRegisterPage" class="Button_PageSwap" name="registerBtn" type="button">Go to register page</button>
+
+<script>
+    $('#toRegisterPage').click(function () {
+        location.href = '/Pages/Registration/RegistrationPage';
+    })
+</script>

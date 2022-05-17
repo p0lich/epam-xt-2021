@@ -1,0 +1,59 @@
+﻿@using EPAM_Task8.BLL
+@using UpdatedEntity
+
+@{
+    Layout = @"~/Pages/Layout/_BasicLayout.cshtml";
+    List<Award> availableAwards = UpdatedLogicBL.GetAwailableAwards();
+    List<User> existUsers = UpdatedLogicBL.GetAllUsers();
+}
+
+<h1>List of avaible awards:</h1>
+
+<div class="Awards_Container">
+    @{for (int i = 0; i < availableAwards.Count; i++)
+        {
+            <div class="Award">
+                <p>@availableAwards[i].Title</p>
+            </div>
+        }
+    }
+
+</div>
+
+<h1>List of users and thier awards:</h1>
+
+<div class="Users_Container">
+    <div class="User">
+        @{for (int i = 0; i < existUsers.Count; i++)
+            {
+                List<Award> userAwards = UpdatedLogicBL.GetUserAwards(existUsers[i].Id);
+                <ul>
+                    <li>Name: @existUsers[i].Name</li>
+                    <li>Date of birth: @existUsers[i].DateOfBirth.ToString("dd-MM-yyyy")</li>
+                    <li>Age: @existUsers[i].Age</li>
+                    <li>
+                        List of Awards:
+                        <ul class="UserAwards">
+                            @{for (int j = 0; j < userAwards.Count; j++)
+                                {
+                                    <li>
+                                        @userAwards[j].Title
+                                    </li>
+                                }
+                            }
+
+                        </ul>
+                    </li>
+                </ul>
+            }
+        }
+    </div>
+</div>
+
+<button id="signOutBtn" class="SignOut_Button" type="button">Sign out</button>
+
+<script>
+    $('#signOutBtn').click(function () {
+        location.href = '/Pages/signOutPage';
+    })
+</script>

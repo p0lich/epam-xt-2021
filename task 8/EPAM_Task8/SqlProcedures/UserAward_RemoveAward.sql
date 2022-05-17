@@ -1,0 +1,15 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UserAward_RemoveAward]
+	@id_award int
+AS
+BEGIN
+	SET NOCOUNT OFF;
+
+	DELETE FROM Users_Awards
+	WHERE Id_Award = @id_award
+END
+GO
